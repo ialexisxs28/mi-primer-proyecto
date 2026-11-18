@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minimarket - Asistente de pedidos</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f5f7;
+  margin: 0;
+  padding: 20px;
+  color: #222;
+}
+header {
+  background: #176b50;
+  color: white;
+  padding: 22px;
+  border-radius: 12px;
+  text-align: center;
+}
+main {
+  max-width: 650px;
+  margin: 20px auto;
+}
+.producto, .chat {
+  background: white;
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: 10px;
+}
+button {
+  background: #176b50;
+  color: white;
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+input {
+  padding: 12px;
+  width: 65%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+#mensajes {
+  min-height: 100px;
+  max-height: 230px;
+  overflow-y: auto;
+}
+.mensaje { margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mi Minimarket</h1>
+  <p>¡Tus productos favoritos en un solo lugar!</p>
+</header>
+
+<main>
+  <h2>Catálogo de productos</h2>
+
+  <div id="catalogo"></div>
+
+  <h2>Tu pedido</h2>
+  <div class="producto" id="pedido">
+    Todavía no agregaste productos.
+  </div>
+
+  <h2>Asistente virtual</h2>
+  <div class="chat">
+    <div id="mensajes">
+      <p class="mensaje">🤖 ¡Hola! Soy el asistente del minimarket. Pregúntame por nuestros productos o precios.</p>
+    </div>
+    <input id="pregunta" placeholder="Escribe tu pregunta">
+    <button onclick="responder()">Enviar</button>
+  </div>
+</main>
+
+<script>
+const productos = [
+  {nombre: "Arroz 1 kg", precio: 4.50},
+  {nombre: "Leche 1 L", precio: 5.00},
+  {nombre: "Azúcar 1 kg", precio: 4.00},
+  {nombre: "Aceite 1 L", precio: 9.50}
+];
+
+let carrito = [];
+
+function mostrarProductos() {
+  const catalogo = document.getElementById("catalogo");
+
+  productos.forEach((producto, indice) => {
+    catalogo.innerHTML += `
+      <div class="producto">
+        <strong>${producto.nombre}</strong>
+        <p>S/ ${producto.precio.toFixed(2)}</p>
+        <button onclick="agregar(${indice})">
+          Agregar al pedido
+        </button>
+      </div>
+    `;
+  });
+}
+
+function agregar(indice) {
+  carrito.push(productos[indice]);
+  mostrarPedido();
+}
+
+function mostrarPedido() {
+  const pedido = document.getElementById("pedido");
+
+  if (carrito.length === 0) {
+    pedido.innerHTML = "Todavía no agregaste productos.";
+    return;
+  }
+
+  let total = 0;
+  let detalle = "";
+
+  carrito.forEach(producto => {
+    total += producto.precio;
+    detalle += `<p>${producto.nombre} - S/ ${producto.precio.toFixed(2)}</p>`;
+  });
+
+  pedido.innerHTML = detalle +
+    `<strong>Total: S/ ${total.toFixed(2)}</strong>`;
+}
+
+function responder() {
+  const entrada = document.getElementById("pregunta");
+  const texto = entrada.value.trim().toLowerCase();
+  const mensajes = document.getElementById("mensajes");
+
+  if (!texto) return;
+
+  mensajes.innerHTML += `<p class="mensaje">🧑 ${texto}</p>`;
+
+  let respuesta = "Por ahora puedo ayudarte con consultas sobre productos, precios y pedidos.";
+
+  if (texto.includes("hola")) {
+    respuesta = "¡Hola! ¿Qué producto estás buscando?";
+  } else if (texto.includes("precio") || texto.includes("productos")) {
+    respuesta = "Tenemos arroz a S/ 4.50, leche a S/ 5.00, azúcar a S/ 4.00 y aceite a S/ 9.50.";
+  } else if (texto.includes("pedido")) {
+    respuesta = "Puedes agregar productos al pedido desde nuestro catálogo.";
+  } else if (texto.includes("horario")) {
+    respuesta = "Nuestro horario todavía está pendiente de configuración.";
+  }
+
+  mensajes.innerHTML += `<p class="mensaje">🤖 ${respuesta}</p>`;
+  entrada.value = "";
+  mensajes.scrollTop = mensajes.scrollHeight;
+}
+
+mostrarProductos();
+</script>
+
+</body>
+</html>
